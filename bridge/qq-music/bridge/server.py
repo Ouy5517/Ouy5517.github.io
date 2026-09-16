@@ -10,6 +10,7 @@ from .jobs import JobManager
 
 
 ALLOWED_ORIGINS = {
+    "https://ouy5517.github.io",
     "https://gugugaga-blog.netlify.app",
     "http://127.0.0.1:5173",
     "http://localhost:5173",

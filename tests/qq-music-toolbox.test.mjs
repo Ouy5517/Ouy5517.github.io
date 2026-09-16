@@ -216,7 +216,7 @@ test("generates toolbox sitemap routes for the production origin without changin
       cwd: root,
       env: {
         ...process.env,
-        SITE_URL: "https://gugugaga-blog.netlify.app",
+        SITE_URL: "https://ouy5517.github.io",
         SITE_ASSETS_OUTPUT_DIR: outputDir,
       },
     });
@@ -224,8 +224,8 @@ test("generates toolbox sitemap routes for the production origin without changin
     const sitemapPath = path.join(outputDir, "sitemap.xml");
     assert.ok(fs.existsSync(sitemapPath), "generator must write sitemap to SITE_ASSETS_OUTPUT_DIR");
     const sitemap = await fsPromises.readFile(sitemapPath, "utf8");
-    assert.match(sitemap, /<loc>https:\/\/gugugaga-blog\.netlify\.app\/tools<\/loc>/);
-    assert.match(sitemap, /<loc>https:\/\/gugugaga-blog\.netlify\.app\/tools\/qq-music-converter<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/ouy5517\.github\.io\/tools<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/ouy5517\.github\.io\/tools\/qq-music-converter<\/loc>/);
     assert.deepEqual(await fsPromises.readFile(publicSitemapPath), publicSitemap);
   } finally {
     await fsPromises.writeFile(publicSitemapPath, publicSitemap);

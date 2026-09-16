@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "node --test tests/qq-music-toolbox.test.mjs tests/github-project-sync.test.mjs",
+    "test": "node --test tests/qq-music-toolbox.test.mjs tests/github-project-sync.test.mjs tests/github-pages-deploy.test.mjs",
     "build": "vite build",
     "prebuild": "node scripts/generate-site-assets.mjs",
+    "postbuild": "node scripts/prepare-github-pages.mjs",
     "sync:github": "node scripts/sync-github-projects.mjs",
     "preview": "vite preview"
   },

@@ -16,7 +16,7 @@ from bridge.converter import ConversionError
 from bridge.server import MAX_UPLOAD_BYTES, create_server
 
 
-BLOG_ORIGIN = "https://gugugaga-blog.netlify.app"
+BLOG_ORIGIN = "https://ouy5517.github.io"
 LOCAL_DEV_ORIGIN = "http://127.0.0.1:5173"
 LOCALHOST_DEV_ORIGIN = "http://localhost:5173"
 

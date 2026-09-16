@@ -4,7 +4,8 @@
 
 - 博客作者：咕咕嘎嘎
 - GitHub：<https://github.com/Ouy5517>
-- 当前仓库：<https://github.com/Ouy5517/gugugaga-blog>
+- 在线地址：<https://ouy5517.github.io>
+- 当前仓库：<https://github.com/Ouy5517/Ouy5517.github.io>
 - 示例项目：<https://github.com/Ouy5517/vibe-coding-web-frontend-test>
 
 项目不是把文章写死在 JSX 里的页面，而是把 Markdown 文件作为内容源，再由 React 在构建时加载、解析和渲染。新增文章或项目时只需要增加一个内容文件，不需要反复修改页面组件。
@@ -24,7 +25,7 @@ React 组件读取 posts / projects
         ↓
 Vite 构建 dist
         ↓
-Netlify 根据 GitHub commit 自动部署
+GitHub Actions 构建并发布到 GitHub Pages
 ~~~
 
 实现过程分为五层：
@@ -47,7 +48,7 @@ Netlify 根据 GitHub commit 自动部署
 | 数学公式 | remark-math + rehype-katex | 渲染行内公式和块级公式 |
 | 代码高亮 | rehype-highlight | 为代码块添加语法高亮 |
 | 图标 | @phosphor-icons/react | 导航、箭头、GitHub 等图标 |
-| 发布 | Netlify | 构建 dist 并持续部署 |
+| 发布 | GitHub Pages + GitHub Actions | 构建 dist 并持续部署 |
 | 内容管理 | Decap CMS（预留） | 在 /admin/ 中编辑 Markdown |
 
 ## 三、目录结构
@@ -63,7 +64,8 @@ blog-site/
 │  └─ sitemap.xml                  构建生成的站点地图
 ├─ scripts/
 │  ├─ generate-site-assets.mjs     生成 RSS、sitemap、robots
-│  └─ sync-github-projects.mjs     从 GitHub 同步项目元数据
+│  ├─ sync-github-projects.mjs     从 GitHub 同步项目元数据
+│  └─ prepare-github-pages.mjs     生成 GitHub Pages 路由回退页
 ├─ src/
 │  ├─ App.jsx                      页面、路由、搜索和交互逻辑
 │  ├─ main.jsx                     React 入口
@@ -73,7 +75,8 @@ blog-site/
 │     ├─ posts/                    技术文章 Markdown
 │     └─ projects/                 项目 Markdown
 ├─ index.html                      全局语言、标题和基础 SEO
-├─ netlify.toml                    Netlify 构建配置
+├─ .github/workflows/              GitHub Pages、项目同步和工具发布流程
+├─ netlify.toml                    旧 Netlify 站点的过渡配置
 ├─ package.json                    命令和依赖
 └─ vite.config.mjs                 Vite 配置
 ~~~
@@ -112,7 +115,7 @@ const postModules = import.meta.glob("./posts/*.md", {
 
 readLocation() 根据 pathname 判断当前页面，onNavigate() 修改地址并刷新 React 状态。这样可以保持依赖简单，同时保留干净的文章 URL。
 
-由于这是单页应用，生产服务器需要把未知路径回退到 index.html。项目中的 netlify.toml 和 public/_redirects 已经配置了这条规则，直接刷新文章详情页不会出现 404。
+由于这是单页应用，直接访问文章路径时需要回退到 React 入口。`npm run build` 会把 `dist/index.html` 复制为 `dist/404.html`，GitHub Pages 遇到未知路径时仍能加载应用，因此直接刷新文章详情页不会停留在 GitHub 的默认 404 页面。`public/_redirects` 和 `netlify.toml` 暂时保留，用于旧 Netlify 站点过渡。
 
 ### 4.3 文章索引、搜索和归档
 
@@ -248,7 +251,7 @@ Actions 自动维护这些项目元数据：
 `title`、`detail`、`stack`、`featured`、`image`、`draft`、正文以及其他手工字段始终由
 博客维护，不会被同步覆盖。API 请求只要有失败，脚本就零写入并让工作流失败，以免产生
 不完整的项目文件。同步完成后只在项目元数据有变化时提交；无变化运行不会
-创建 commit。Bot commit 推送到 `main` 后，Netlify 会按既有配置自动部署。
+创建 commit。Bot commit 推送到 `main` 后，GitHub Pages 工作流会自动部署。
 
 本地可以用下面的命令预览或排查同步结果：
 
@@ -348,8 +351,8 @@ image: /assets/card-periwinkle.png
 ## 六、本地开发和验证
 
 ~~~powershell
-git clone https://github.com/Ouy5517/gugugaga-blog.git
-cd gugugaga-blog
+git clone https://github.com/Ouy5517/Ouy5517.github.io.git
+cd Ouy5517.github.io
 npm install
 npm run dev
 ~~~
@@ -376,32 +379,31 @@ QQ 音乐工具箱的桥接服务维护命令请见 [`bridge/qq-music/README.md`
 
 ## 七、部署实现
 
-项目使用 Netlify 的持续部署链路：
+项目使用 GitHub Pages 的持续部署链路：
 
 ~~~text
 本地修改 Markdown / React / CSS
         ↓ git commit + git push
 GitHub main
-        ↓ webhook
-Netlify: npm run build
+        ↓ GitHub Actions
+npm ci → npm test → npm run build
         ↓
-发布 dist
+上传 dist → 发布 GitHub Pages
 ~~~
 
-Netlify 构建配置已经写入 netlify.toml：
+部署工作流位于 `.github/workflows/deploy-github-pages.yml`，其中正式站点地址固定为：
 
-~~~toml
-[build]
-  command = "npm run build"
-  publish = "dist"
+~~~yaml
+SITE_URL: https://ouy5517.github.io
 ~~~
 
-在 Netlify 导入 Ouy5517/gugugaga-blog 后确认：
+仓库重命名为 `Ouy5517.github.io` 后，在 GitHub 仓库中确认：
 
-- Branch：main
-- Build command：npm run build
-- Publish directory：dist
-- Environment variable：SITE_URL=https://你的站点域名
+- Settings → Pages → Source 选择 GitHub Actions。
+- Actions 中的 `Deploy GitHub Pages` 工作流执行成功。
+- Environments 中的 `github-pages` 指向 `https://ouy5517.github.io`。
+
+公开仓库使用标准 GitHub-hosted runner 构建，不依赖本机运行。旧 Netlify 项目可以在迁移验证完成前继续保留，避免切换期间中断访问。
 
 当前仓库还包含 public/admin/，用于预留 Decap CMS。若启用后台，需要额外配置身份认证和 GitHub 写入权限；生产环境建议先使用 GitHub 提交 Markdown，确认部署稳定后再配置 CMS 登录。
 
@@ -413,9 +415,9 @@ Netlify 构建配置已经写入 netlify.toml：
 2. 本地执行 npm run build。
 3. 检查 git diff，确认只包含预期文件。
 4. 提交并推送到 main。
-5. Netlify 自动构建，构建完成后线上内容更新。
+5. GitHub Actions 自动构建并发布，完成后线上内容更新。
 
-也可以直接在 GitHub 网页编辑 Markdown 文件。提交后，Netlify 会走同样的自动部署流程。
+也可以直接在 GitHub 网页编辑 Markdown 文件。提交后，GitHub Pages 会走同样的自动部署流程。
 
 ## 九、当前限制和后续计划
 

@@ -12,7 +12,7 @@ from bridge.server import create_server
 
 
 BRIDGE_URL = "http://127.0.0.1:8765"
-TOOL_URL = "https://gugugaga-blog.netlify.app/tools/qq-music-converter"
+TOOL_URL = "https://ouy5517.github.io/tools/qq-music-converter"
 
 
 def _safe_print(message: str) -> None:

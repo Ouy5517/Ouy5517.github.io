@@ -6,7 +6,7 @@ import { bridgeUrl, formatBytes, selectQQMusicFiles, statusLabel, targetFor } fr
 
 const HEALTH_INTERVAL_MS = 12_000;
 const JOB_INTERVAL_MS = 650;
-const releaseUrl = "https://github.com/Ouy5517/gugugaga-blog/releases/latest/download/qq-music-bridge.exe";
+const releaseUrl = "https://github.com/Ouy5517/Ouy5517.github.io/releases/latest/download/qq-music-bridge.exe";
 const bridgeRequestOptions = { mode: "cors", targetAddressSpace: "loopback" };
 
 function queueItemFor(file) {
