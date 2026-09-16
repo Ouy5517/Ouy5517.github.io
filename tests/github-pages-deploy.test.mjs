@@ -35,6 +35,7 @@ test("GitHub Pages workflow builds the root-domain site from main", async () => 
 
   assert.match(workflow, /branches:\s*\[main\]/);
   assert.match(workflow, /SITE_URL:\s*https:\/\/ouy5517\.github\.io/);
+  assert.match(workflow, /node-version:\s*"22"/);
   assert.match(workflow, /path:\s*\.\/dist/);
   assert.match(workflow, /pages:\s*write/);
   assert.match(workflow, /id-token:\s*write/);
