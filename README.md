@@ -115,7 +115,7 @@ const postModules = import.meta.glob("./posts/*.md", {
 
 readLocation() 根据 pathname 判断当前页面，onNavigate() 修改地址并刷新 React 状态。这样可以保持依赖简单，同时保留干净的文章 URL。
 
-由于这是单页应用，直接访问文章路径时需要回退到 React 入口。`npm run build` 会把 `dist/index.html` 复制为 `dist/404.html`，GitHub Pages 遇到未知路径时仍能加载应用，因此直接刷新文章详情页不会停留在 GitHub 的默认 404 页面。`public/_redirects` 和 `netlify.toml` 暂时保留，用于旧 Netlify 站点过渡。
+由于这是单页应用，直接访问文章路径时需要回退到 React 入口。`npm run build` 会把 `dist/index.html` 复制为 `dist/404.html`，并根据 sitemap 为文章、索引和工具路径生成对应的 `index.html`。因此直接刷新内容页能够返回 200 并正常加载应用。`public/_redirects` 和 `netlify.toml` 暂时保留，用于旧 Netlify 站点过渡。
 
 ### 4.3 文章索引、搜索和归档
 
